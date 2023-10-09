@@ -3,12 +3,15 @@ title: Dasar-dasar Pemrograman Rust
 lang: id
 
 # Uncomment and fill to generate files
-output.html: hasil/dasar-dasar-pemrograman-rust-id.html
-output.epub: hasil/dasar-dasar-pemrograman-rust-id.epub
-output.pdf: hasil/dasar-dasar-pemrograman-rust-id.pdf
+output.html: dasar-dasar-pemrograman-rust-id.html
+output.epub: dasar-dasar-pemrograman-rust-id.epub
+output.pdf: dasar-dasar-pemrograman-rust-id.pdf
+
+# Or uncomment the following to generate PDF, HTML and EPUB files based on this file's name
+output: [pdf, epub, html]
 
 # Uncomment and fill to set cover image (for Epub)
-cover: gambar/sampul.png
+cover: sampul.png
 
 # List of chapters
 + bab-01.md

@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="utf-8">
+    <meta name="generator" content="crowbook">
+    <meta name="viewport" content="width=device-width">
+    <meta name="author" content="Imam Digmi">
+    
+    <title>Dasar-dasar Pemrograman Rust</title>
+    <style type = "text/css">
+      body {
+    font-family: "Linux Libertine", "Georgia", serif;
+    text-align: justify;
+    font-size: 100%;
+}
+
+p {
+    text-indent: 1.25em;
+    margin:0;
+    hyphens: auto;
+}
+
+blockquote {
+    margin: 1em;
+    font-style: italic;
+}
+code {
+    font-size: 80%;
+    font-family: "Linux Libertine Mono", monospace;
+    background-color: #F0F0F0;
+}
+pre {
+    font-family: "Linux Libertine Mono", monospace;
+    margin: 1em;
+    padding-top: 0;
+    background-color: #F0F0F0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+/* Try to disable hyphenation in titles */
+h1, h2, h3, h4, h5, h5 {
+    adobe-hyphenate: none;
+    -ms-hyphens: none; /* Trident (Windows) */
+    -moz-hyphens: none; /* Gecko (Firefox) */
+    -webkit-hyphens: none; /* Webkit */
+    -epub-hyphens: none; /* EPUB 3 */
+    hyphens: none; /* Futur standard */
+}
+
+h1, h2, h3, h4, h5, h6 {
+    text-align: left;
+    font-family: Linux Biolinum, sans-serif;
+    font-variant: small-caps;
+}
+
+/* Title of a part */
+h1.part {
+    font-size: 250%;
+    text-align: center;
+}
+
+/* The `Part X` section of a part */
+h2.part {
+    font-size: 175%;
+    text-align: center;
+}
+
+/* The "Chapter X" section of a chapter */
+span.chapter-header {
+    font-size: 75%;
+}
+
+/* Title of the book */
+h1.title {
+    text-align: center;
+    font-size: 300%;
+}
+/* Author */
+h2.author {
+    text-align: right;
+    font-size:  200%;
+}
+
+/* Subtitle */
+h2.subtitle {
+    text-align: center;
+    font-size: 200%;
+}
+
+/* When toc is displayed inlined */
+#toc ol, #toc ul {
+    padding: 0;
+    margin-left: 1em;
+}
+#toc li {
+    list-style-type: none;
+    margin: 0; padding: 0;
+}
+
+#toc li:before {
+    content: none;
+}
+
+#cover img {
+    width: 100%;
+    max-height: 100%;
+}
+
+.image {
+    margin: auto;
+    width: 80%;
+}
+
+.image img {
+    width: 100%;
+    max-height: 100%;
+}
+
+.rule {
+    text-align: center !important;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    font-weight: bold;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    page-break-after: avoid;
+    break-after: avoid;
+}
+
+/* The number of the note in an expanded footnote (e.g. [3]) */
+.note-number {
+    font-weight: bold;
+    margin-right: 1em;
+}
+
+td.note-number {
+    vertical-align: top;
+}
+
+/* When footnotes (try to) be diplayed as margin notes */
+.sidenote {
+    display: block;
+    float: right;
+    width: 30%;
+    border: 1px solid black;
+    margin: 1em;
+    padding: .5em;
+    margin-right: -1.5em;
+}
+
+.sidenote .note-number {
+    float: left;
+}
+
+/* The div class displaying notes at the end of a chapter */
+div.notes {
+    text-align: justify;
+    border-top: thin dashed black;
+    margin-top: 1em;
+}
+
+table.notes {
+    border-collapse: collapse;
+    border-style: hidden;
+}
+
+table.notes tr td {
+    margin-left: 1em;
+    margin-right: 1em;
+}
+
+table.notes tr td p {
+    text-indent: 0;
+}
+                 
+/* Every markdown table is included in a <div class = "table"> */
+.table {
+    margin: 1em;
+}
+
+.table table {
+    width: 80%;
+    margin: 0 auto;
+    border-style: solid;
+    border-width: thin;
+    border-color: black;
+    border-collapse: collapse;
+}
+
+.table table th, .table table td {
+    border-style: solid;
+    border-width: 1px;
+    text-align: center;
+}
+
+.table table th {
+    font-weight: bold;
+    font-variant: small-caps;
+}
+
+
+span.initial { 
+    float: left;
+    font-size: 285%;
+    font-weight: bold;
+    margin-right: 0.05em;
+    line-height: 0.8em;
+}
+
+p.first-para {
+    text-indent: 0;
+}
+
+/* Use this for escape narrow space so it is non-breaking */
+.nnbsp {
+    /* white-space: nowrap;*/
+    word-spacing: -0.13em;
+    /* Following necessary for Kobo EPUB3 reader??? */
+    margin: 0;
+    padding: 0;
+}
+
+/* Default  HTML CSS file includes default EPUB CSS file */
+
+/* Colors for the navigation menu (toc) */
+nav {
+    background: #CBBFCC;
+    color: black;
+    border-right-color: black;
+}
+
+#nav a:link {
+    color: black;
+}
+
+#nav a:visited {
+    color: black;
+}
+
+/* Colors for top and footer */
+#top {
+    background-color: #444343;
+    color: white;
+}
+
+footer {
+    background-color: #444343;
+    color: white;
+}
+
+footer a, #top a {
+    color: #fc71ff;
+}
+
+footer a:hover, #top a:hover {
+    color: #b743fe;
+}
+
+/* Additional elements, only use for proofreading */
+/* Grammar error */
+.grammar-error {
+    color: red;
+    text-decoration-line: underline;
+    text-decoration-style: double;
+/*    background: #d966ff;*/
+}
+
+
+p.first-para:first-letter {
+    font-size: 300%;
+    float: left;
+    font-weight: bold;
+    margin-right: 0.05em;
+    line-height: 1em;
+}
+
+/* The nav element corresponding to the navigation menu */
+nav {
+    z-index: 2;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 20%;
+    overflow-y: auto;
+    font-size: 80%;
+    margin-left: 0;
+    border-right-width: 2px;
+    border-right-style: dashed;
+}
+
+#nav code {
+    background-color: transparent;
+}
+
+#nav a:link {
+    text-decoration: none;
+}
+
+#nav a:visited {
+    text-decoration: none;
+}
+
+#nav {
+    text-align: left;
+}
+
+#nav h2 {
+    text-align: center;
+}
+
+#nav li {
+    list-style-type: none;
+    text-indent: -1em;
+}
+
+#nav li:before {
+    content: none;
+}
+
+#nav ul {
+    padding-right: 1em;
+    padding-left: 1.5em;
+}
+
+/* The menu containing the button to display the navigation bar */
+#menu {
+    position: fixed;
+    z-index: 2;
+    top: 0em;
+    left: 1em;
+    transition: left 1s;
+}
+
+#menu img {
+    opacity: 0.5;
+}
+
+#menu img:hover {
+    opacity: 1.0;
+    cursor: pointer;
+}
+
+#menu-button {
+    height: 1.5em;
+    padding: 0.5em;
+}
+
+#book-button {
+    height: 1.5em;
+    padding: 0.5em;
+    float: left;
+}
+
+/* Hide navigation bar */
+#nav {
+    left: -21%;
+    transition: left 1s;
+}
+
+/* The main content of the book */
+#content {
+    overflow-y: auto;
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    transition: margin-left 1s;
+}
+
+/* Used for multifiles HTML */
+.prev_chapter {
+    text-align: left;
+    text-indent: 0;
+    margin-bottom: 1em;
+    font-size: 120%;
+    font-variant: small-caps;
+    font-weight: bold;
+}
+
+.next_chapter {
+    text-align: right;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    font-size: 120%;
+    font-variant: small-caps;
+    font-weight: bold;
+}
+
+/* Improving readability for the HTML format only */
+p, blockquote, li, .image  {
+    margin-right: auto;
+    max-width: 33em;
+}
+
+blockquote {
+    padding: 1em;
+}
+
+#content {
+    text-align: center;
+}
+
+#page {
+    display: inline-block;
+    text-align: justify;
+    max-width: 33em;
+}
+
+#nav-container {
+    top: 0;
+    width: 100%;
+}
+
+#nav-title {
+    top: 0;
+}
+
+#toolbar {
+    top: 0;
+    float: left;
+}
+
+#toolbar img {
+    cursor: pointer;
+}
+
+footer {
+    margin-top: 2em;
+    margin-bottom: 0;
+}
+
+#top {
+    margin-top: 0;
+    margin-bottom: 1em;
+}
+
+#top p {
+    font-family: "Linux Biolinum";
+    font-weight: bold;
+    font-variant: small-caps;
+}
+
+footer, #top {
+    padding-top: .25em;
+    padding-bottom: .25em;
+    margin-left: 0;
+    margin-right: 0;
+    text-align: center;
+    transition: margin-left 1s;
+}
+
+footer a, #top a {
+    text-decoration: none;
+}
+
+footer p, #top p {
+    text-indent: 0;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0.5em;
+    margin-top: 0.5em;
+    max-width: 33em;
+}
+
+
+
+    </style>
+    <style type = "text/css" media = "print">
+      #page {
+    display: block;
+}
+
+.chapter {
+    page-break-before: always;
+}
+
+#menu {
+    display: none;
+}
+
+#nav {
+    display: none;
+}
+    </style>
+   <script>
+function on(name) {
+    var elements = document.getElementsByClassName(name);
+    for (var i = 0; i < elements.length; i++) {
+        var elem = elements[i];
+        elem.style.backgroundColor = "pink";
+    }
+}
+function off(name) {
+    var elements = document.getElementsByClassName(name);
+    for (var i = 0; i < elements.length; i++) {
+        var elem = elements[i];
+        elem.style.backgroundColor = "white";
+    }
+}
+
+var display_menu = false;
+function toggle() {
+    if (display_menu == true) {
+        display_menu = false;
+        document.getElementById("nav").style.left = "-21%";
+        document.getElementById("content").style.marginLeft = "0%";
+        document.getElementById("menu").style.left = "1em";
+/*        if(document.getElementById("top")) {
+            document.getElementById("top").style.left = "0";
+        }
+        if(document.getElementById("footer")) {
+            document.getElementById("footer").style.marginLeft = "0%";
+        }*/
+    } else {
+        display_menu = true;
+        document.getElementById("nav").style.left = "0";
+        document.getElementById("content").style.marginLeft = "20%";
+        document.getElementById("menu").style.left = "20%";
+/*        if(document.getElementById("top")) {
+            document.getElementById("top").style.left = "20%";
+        }
+        if(document.getElementById("footer")) {
+            document.getElementById("footer").style.marginLeft = "20%";
+        }*/
+    }
+}
+
+
+
+   </script>
+
+
+  </head>
+  <body>
+    
+<script type = 'application/ld+json'>
+{
+    "@context": "http://schema.org/",
+    "@type": "Book",
+    "author": "Imam Digmi",
+    "name": "Dasar-dasar Pemrograman Rust",
+    
+    
+    
+    
+    
+    "inLanguage": "id"
+
+
+
+
+}
+</script>
+    <nav id = "nav">
+      <div id = "nav-title">
+        <h2><a href = "#link-0">Dasar-dasar Pemrograman Rust</a></h2>
+      </div>
+          <ul>
+      <li><a href="#link-1">1. Berkenalan dengan Rust</a></li>
+      <li><a href="#link-11">2. Pointer dan Memori Safety</a></li>
+      <li><a href="#link-12">3. Penulisan Sintaks Dasar</a></li>
+      <li><a href="#link-13">4. Pengorganisasian Kode dan Macro</a></li>
+      <li><a href="#link-14">5. Konkurensi dan Paralel</a></li>
+    </ul>
+    </nav>
+
+    <div id = "content">
+      
+      <div id = "page">
+        <header>
+
+          <div id = "menu">
+            <img id = "menu-button" onclick="toggle();"
+                 src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjwhLS0gQ3JlYXRlZCB3aXRoIElua3NjYXBlIChodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy8pIC0tPgoKPHN2ZwogICB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iCiAgIHhtbG5zOmNjPSJodHRwOi8vY3JlYXRpdmVjb21tb25zLm9yZy9ucyMiCiAgIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyIKICAgeG1sbnM6c3ZnPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxuczpzb2RpcG9kaT0iaHR0cDovL3NvZGlwb2RpLnNvdXJjZWZvcmdlLm5ldC9EVEQvc29kaXBvZGktMC5kdGQiCiAgIHhtbG5zOmlua3NjYXBlPSJodHRwOi8vd3d3Lmlua3NjYXBlLm9yZy9uYW1lc3BhY2VzL2lua3NjYXBlIgogICB3aWR0aD0iMjAwbW0iCiAgIGhlaWdodD0iMjAwbW0iCiAgIHZpZXdCb3g9IjAgMCA3MDguNjYxNDIgNzA4LjY2MTQxIgogICBpZD0ic3ZnMiIKICAgdmVyc2lvbj0iMS4xIgogICBpbmtzY2FwZTp2ZXJzaW9uPSIwLjkxIHIxMzcyNSIKICAgc29kaXBvZGk6ZG9jbmFtZT0ibWVudS5zdmciPgogIDxkZWZzCiAgICAgaWQ9ImRlZnM0IiAvPgogIDxzb2RpcG9kaTpuYW1lZHZpZXcKICAgICBpZD0iYmFzZSIKICAgICBwYWdlY29sb3I9IiNmZmZmZmYiCiAgICAgYm9yZGVyY29sb3I9IiM2NjY2NjYiCiAgICAgYm9yZGVyb3BhY2l0eT0iMS4wIgogICAgIGlua3NjYXBlOnBhZ2VvcGFjaXR5PSIwLjAiCiAgICAgaW5rc2NhcGU6cGFnZXNoYWRvdz0iMiIKICAgICBpbmtzY2FwZTp6b29tPSIwLjQ5NDk3NDc1IgogICAgIGlua3NjYXBlOmN4PSIxMDUuNjEyNzUiCiAgICAgaW5rc2NhcGU6Y3k9IjQwNy4wNjM5MSIKICAgICBpbmtzY2FwZTpkb2N1bWVudC11bml0cz0icHgiCiAgICAgaW5rc2NhcGU6Y3VycmVudC1sYXllcj0ibGF5ZXIxIgogICAgIHNob3dncmlkPSJmYWxzZSIKICAgICBpbmtzY2FwZTp3aW5kb3ctd2lkdGg9IjEzNjYiCiAgICAgaW5rc2NhcGU6d2luZG93LWhlaWdodD0iNzA0IgogICAgIGlua3NjYXBlOndpbmRvdy14PSIwIgogICAgIGlua3NjYXBlOndpbmRvdy15PSIyNyIKICAgICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIxIiAvPgogIDxtZXRhZGF0YQogICAgIGlkPSJtZXRhZGF0YTciPgogICAgPHJkZjpSREY+CiAgICAgIDxjYzpXb3JrCiAgICAgICAgIHJkZjphYm91dD0iIj4KICAgICAgICA8ZGM6Zm9ybWF0PmltYWdlL3N2Zyt4bWw8L2RjOmZvcm1hdD4KICAgICAgICA8ZGM6dHlwZQogICAgICAgICAgIHJkZjpyZXNvdXJjZT0iaHR0cDovL3B1cmwub3JnL2RjL2RjbWl0eXBlL1N0aWxsSW1hZ2UiIC8+CiAgICAgICAgPGRjOnRpdGxlPjwvZGM6dGl0bGU+CiAgICAgIDwvY2M6V29yaz4KICAgIDwvcmRmOlJERj4KICA8L21ldGFkYXRhPgogIDxnCiAgICAgaW5rc2NhcGU6bGFiZWw9IkxheWVyIDEiCiAgICAgaW5rc2NhcGU6Z3JvdXBtb2RlPSJsYXllciIKICAgICBpZD0ibGF5ZXIxIgogICAgIHRyYW5zZm9ybT0idHJhbnNsYXRlKDAsLTM0My43MDA3OSkiPgogICAgPHBhdGgKICAgICAgIHN0eWxlPSJmaWxsOm5vbmU7ZmlsbC1ydWxlOmV2ZW5vZGQ7c3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjEwMDtzdHJva2UtbGluZWNhcDpyb3VuZDtzdHJva2UtbGluZWpvaW46cm91bmQ7c3Ryb2tlLW1pdGVybGltaXQ6NDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MSIKICAgICAgIGQ9Im0gMTA0LjMzMDcxLDQ2OS41MDUxIDUwMCwwIgogICAgICAgaWQ9InBhdGg0MTM2IgogICAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIgLz4KICAgIDxwYXRoCiAgICAgICBzdHlsZT0iZmlsbDpub25lO2ZpbGwtcnVsZTpldmVub2RkO3N0cm9rZTojMDAwMDAwO3N0cm9rZS13aWR0aDoxMDA7c3Ryb2tlLWxpbmVjYXA6cm91bmQ7c3Ryb2tlLWxpbmVqb2luOnJvdW5kO3N0cm9rZS1taXRlcmxpbWl0OjQ7c3Ryb2tlLWRhc2hhcnJheTpub25lO3N0cm9rZS1vcGFjaXR5OjEiCiAgICAgICBkPSJtIDEwNC4zMzA3MSw3MDQuNTA1MSA1MDAsMCIKICAgICAgIGlkPSJwYXRoNDEzNi01IgogICAgICAgaW5rc2NhcGU6Y29ubmVjdG9yLWN1cnZhdHVyZT0iMCIKICAgICAgIGlua3NjYXBlOnRyYW5zZm9ybS1jZW50ZXIteD0iNzEuNDI4NTcyIgogICAgICAgaW5rc2NhcGU6dHJhbnNmb3JtLWNlbnRlci15PSItMjQyLjg1NzE2IiAvPgogICAgPHBhdGgKICAgICAgIHN0eWxlPSJmaWxsOm5vbmU7ZmlsbC1ydWxlOmV2ZW5vZGQ7c3Ryb2tlOiMwMDAwMDA7c3Ryb2tlLXdpZHRoOjEwMDtzdHJva2UtbGluZWNhcDpyb3VuZDtzdHJva2UtbGluZWpvaW46cm91bmQ7c3Ryb2tlLW1pdGVybGltaXQ6NDtzdHJva2UtZGFzaGFycmF5Om5vbmU7c3Ryb2tlLW9wYWNpdHk6MSIKICAgICAgIGQ9Im0gMTA0LjMzMDcxLDkzOS41MDUwNiA1MDAsMCIKICAgICAgIGlkPSJwYXRoNDEzNi01LTMiCiAgICAgICBpbmtzY2FwZTpjb25uZWN0b3ItY3VydmF0dXJlPSIwIgogICAgICAgaW5rc2NhcGU6dHJhbnNmb3JtLWNlbnRlci14PSI3MS40Mjg1NzIiCiAgICAgICBpbmtzY2FwZTp0cmFuc2Zvcm0tY2VudGVyLXk9Ii0yNDIuODU3MTYiIC8+CiAgPC9nPgo8L3N2Zz4K"
+                 alt = "Table of contents" title = "Table of contents" />
+          </div>
+	  <h2 class="author">Imam Digmi</h2>
+          <h1 id = "link-0" class="title" >Dasar-dasar Pemrograman Rust</h1>
+	  
+        </header>
+
+        <div id = "chapter-0" class = "chapter">
+  <h1 id = 'link-1'><span class = 'chapter-header'>Chapter 1</span><br />Berkenalan dengan Rust</h1><p id = "para-1">Bab ini membahas tentang pengetahuan dasar untuk mulai berkenalan dengan Rust. Pembahasan pada bab ini diantaranya adalah :</p>
+<ol>
+<li><p id = "para-2">Apa itu Rust?</p>
+</li>
+<li><p id = "para-3">Instalasi Rust dan paket pendukung lainnya</p>
+</li>
+<li><p id = "para-4">Instalasi IDE dan Text Editor</p>
+</li>
+<li><p id = "para-5">Command</p>
+</li>
+</ol>
+<h2 id = "link-2">Apa itu Rust?</h2>
+<p id = "para-6">Rust adalah bahasa pemrograman <em>low-level</em> yang mulai dikembangkan sejak tahun 2006 oleh Graydon Hoare salah seorang engineer di Mozilla. Rust adalah bahasa pemrograman sistem (<em>system programming</em>) yang difokuskan pada tiga tujuan: keamanan, kecepatan, dan concurrency. Rust memelihara tujuan ini tanpa garbage collector yang membuatnya menjadi bahasa yang berguna untuk sejumlah kasus penggunaan bahasa lain. Tidak hanya itu rust juga bahasa dengan general purpose language, bahasa low-level yang bisa membantu kita untuk mengeksplorasi potensi sisi system, embedded system, dan hal-hal kritis terkait performance.</p>
+<h2 id = "link-3">Instalasi Rust dan Paket Pendukung Lainnya</h2>
+<h3 id = "link-4">Instalasi Rust</h3>
+<p id = "para-7">Untuk menginstal rust kita akan menggunakan <a href = "https://www.rustup.rs/">rustup</a>, namun sebelum itu kita perlu mengetahui apa itu rustup. Rustup adalah official toolchain manajemen dari <a href = "https://www.rust-lang.org/">The Rust Programming Language</a>. Dengan rustup kita dapat dengan mudah : menginstal, mengupdate, mengganti versi compiler (stable, beta, dan nightly) dan mempermudah kita dalam mengkompilasi kode sumber berikut dengan standard library agar aplikasi kita dapat dijalankan platform yang didukung oleh Rust. Untuk menginstal rust sangat mudah sekali, kita hanya perlu menjalankan :</p>
+<pre><span style="color:#323232;">curl https://sh.rustup.rs -sSf | sh</span>
+
+</pre><p id = "para-8">Jika perintah diatas dijalankan rustup akan memberikan pilihan apakah kita akan menginstal rust secara custom atau default.</p>
+<pre><span style="color:#323232;">info: downloading installer</span>
+
+<span style="color:#323232;">Welcome to Rust!</span>
+
+<span style="color:#323232;">This will download and install the official compiler for the Rust programming</span>
+<span style="color:#323232;">language, and its package manager, Cargo.</span>
+
+<span style="color:#323232;">It will add the cargo, rustc, rustup and other commands to Cargo&#39;s bin</span>
+
+<span style="color:#323232;">directory, located at:</span>
+
+<span style="color:#323232;">  /home/&lt;user&gt;/.cargo/bin</span>
+
+<span style="color:#323232;">This path will then be added to your PATH environment variable by modifying the</span>
+<span style="color:#323232;">profile file located at:</span>
+
+<span style="color:#323232;">  /home/&lt;user&gt;/.profile</span>
+
+<span style="color:#323232;">You can uninstall at any time with rustup self uninstall and these changes will</span>
+<span style="color:#323232;">be reverted.</span>
+
+<span style="color:#323232;">Current installation options:</span>
+
+<span style="color:#323232;">   default host triple: x86_64-unknown-linux-gnu</span>
+<span style="color:#323232;">     default toolchain: stable</span>
+<span style="color:#323232;">  modify PATH variable: yes</span>
+
+<span style="color:#323232;">1) Proceed with installation (default)</span>
+<span style="color:#323232;">2) Customize installation</span>
+<span style="color:#323232;">3) Cancel installation</span>
+
+</pre><p id = "para-9">Pada saat kita menginstal Rust maka kita akan mendapatkan tiga buah tool yaitu : cargo, rustc dan rustup.</p>
+<ol>
+<li><p id = "para-10"><b>cargo</b> adalah package manager untuk Rust.</p>
+</li>
+<li><p id = "para-11"><b>rustc</b> adalah compiler yang digunakan untuk mengkompilasikode sumber ke static binary.</p>
+</li>
+<li><p id = "para-12"><b>rustup</b> adalah toolchain manajemen yang sudah kita bahas diatas.</p>
+</li>
+</ol>
+<h3 id = "link-5">Instalasi paket pendukung</h3>
+<p id = "para-13">Pada tahap instalasi diatas sebenarnya kita sudah dapat bermain dengan Rust, namun ada “the most useful tools” yang sangat berguna bagi kita yaitu : racer, rustfmt, rustsym.</p>
+<ul>
+<li><p id = "para-14"><b>racer</b></p>
+<p id = "para-15">Tool ini berfungsi untuk auto-suggestion pada saat kita menuliskan keyword, library, dan lainnya yang hendak kita pakai. Untuk menginstal racer jalankan perintah :</p>
+<pre><span style="color:#323232;">cargo install racer</span>
+
+</pre><p id = "para-16">Contoh penggunaan racer :</p>
+<pre><span style="color:#323232;">racer complete std::io::R</span>
+
+<span style="color:#323232;">// Output</span>
+<span style="color:#323232;">MATCH Read,427,10,/home/&lt;user&gt;/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/libstd/io/mod.rs,Trait,pub trait Read</span>
+<span style="color:#323232;">MATCH Result,48,9,/home/&lt;user&gt;/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/libstd/io/error.rs,Type,pub type Result&lt;T&gt; = result::Result&lt;T, Error&gt;;</span>
+<span style="color:#323232;">MATCH Repeat,107,11,/home/&lt;user&gt;/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src/libstd/io/util.rs,Struct,pub struct Repeat</span>
+
+</pre></li>
+<li><p id = "para-17"><b>rustfmt</b></p>
+<p id = "para-18">Tool ini berfungsi untuk memformat penulisan kode sumber yang kita buat</p>
+<pre><span style="color:#323232;">cargo install rustfmt</span>
+
+</pre></li>
+<li><p id = "para-19"><b>rustsym</b></p>
+<p id = "para-20">Tool ini berfungsi untuk meng-query atau mencari karakter didalam kode sumber yang kita buat</p>
+<pre><span style="color:#323232;">cargo install rustsym</span>
+
+</pre></li>
+</ul>
+<h2 id = "link-6">Instalasi Text Editor</h2>
+<ul>
+<li><p id = "para-21"><b>Arch</b> <code>sudo pacman -S atom</code> atau <code>yaourt atom-editor-git</code></p>
+</li>
+<li><p id = "para-22"><b>Debian/Ubuntu</b> Download file binari pada <a href = "https://atom.io/">Website Atom</a> lalu jalankan <code>sudo dpkg -i atom-amd64.deb</code> Setelah instalasi text editor selesai kita perlu mengintegrasikan tool tambahan yang sudah kita install tadi seperti : racer, rustfmt dan rustsym ke text editor, untuk menginstalnya cukup jalankan perintah :</p>
+<pre><span style="color:#323232;">apm install racer</span>
+<span style="color:#323232;">apm install rustfmt</span>
+<span style="color:#323232;">apm install rustsym</span>
+
+</pre><p id = "para-23">Jika proses instalasi selesai kita juga perlu setup racer agar dapat berjalan di text editor kita, buka atom text editor lalu masuk ke <b>Preferences</b> atau <b>CTRL+, &gt; Packages</b> klik package racer lalu kita isikan PATH Variable yang dibutuhkan racer contoh :</p>
+</li>
+</ul>
+<div class = "table">
+    <table>
+<tr>
+<th>Display Name</th><th>Description</th></tr>
+<tr>
+<td>Path to the Racer executable</td><td><code>~/.cargo/bin/racer</code></td></tr>
+<tr>
+<td>Path to the Rust source code directory</td><td><code>~/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/lib/rustlib/src/rust/src</code></td></tr>
+<tr>
+<td>Cargo home directory</td><td><code>~/.cargo/</code></td></tr>
+
+    </table>
+</div>
+<blockquote><p id = "para-24">Note: <code>~</code> adalah folder HOME user anda.</p>
+</blockquote>
+<h2 id = "link-7">Command</h2>
+<p id = "para-25">Pada sub bab ini kita akan membahas tentang penggunaan <em>command line interface</em> dari tool : rustc, rustup dan cargo yang berguna pada saat kita membangun aplikasi.</p>
+<h3 id = "link-8">Rust Compiler (rustc)</h3>
+<p id = "para-26">Rust Compiler (<code>rustc</code>) adalah tool yang digunakan untuk mengkompilasikode sumber kedalam <em>static-binary</em> karen Rust adalah bahasa pemrogramman <code>ahead-of-time compiled</code> yang artinya kita mengkompilasiaplikasi kita lalu kita dapat mendistribusikan aplikasi kita dan langsung dapat di-running tanpa harus menginstal Rust terlebih dahulu, tidak seperti bahasa lainnya misalnya <code>.rb</code>, <code>.py</code> atau <code>.js</code> yang mana kita harus menginstal <em>ruby</em>, <em>pyton</em>, atau <em>javascript</em> terlebih dahulu sebelum me-running file tersebut. Untuk mengkompilasicaranya cukup mudah hanya dengan <code>rustc &lt;nama-file&gt;.rs</code>. Contohnya terdapat program sederhana yang menampilkan kalimat “Hello!, Aku &lt;3 Rust.” dengan nama file <code>hello.rs</code> seperti dibawah ini :</p>
+<pre><span style="font-weight:bold;color:#a71d5d;">fn </span><span style="font-weight:bold;color:#795da3;">main</span><span style="color:#323232;">() {</span>
+<span style="color:#323232;">    println!(</span><span style="color:#183691;">&quot;Hello!, Aku &lt;3 Rust.&quot;</span><span style="color:#323232;">);</span>
+<span style="color:#323232;">}</span>
+
+</pre><p id = "para-27">maka untuk mengkompilasi file tersebut :</p>
+<pre><span style="color:#323232;">rustc hello.rs</span>
+
+</pre><p id = "para-28">dan untuk menjalankan nya :</p>
+<pre><span style="color:#323232;">./hello</span>
+
+<span style="color:#323232;">// Output</span>
+<span style="color:#323232;">Hello!, Aku &lt;3 Rust.</span>
+
+</pre><p id = "para-29">bagaimana jika ingin mengganti nama file hasil kompilasi? mudah saja, kita tambahan options <code>-o</code> diikuti dengan nama file yang kita inginkan lalu nama file kode sumber, contoh :</p>
+<pre><span style="color:#323232;">rustc -o program_pertama hello.rs</span>
+
+</pre><p id = "para-30">ketika menjalankan kembali hasil kompilasi hasilnya akan sama saja.</p>
+<h3 id = "link-9">Rustup</h3>
+<p id = "para-31">Rustup digunakan untuk berhubungan dengan toolchain dan kita perlu mengetahui standard penamaan rilis channel toolchain :</p>
+<pre><span style="color:#323232;">&lt;channel&gt;[-&lt;date&gt;][-&lt;host&gt;]</span>
+<span style="color:#323232;">&lt;channel&gt;       = stable|beta|nightly|&lt;version&gt;</span>
+<span style="color:#323232;">&lt;date&gt;          = YYYY-MM-DD</span>
+<span style="color:#323232;">&lt;host&gt;          = &lt;target-triple&gt;</span>
+
+</pre><p id = "para-32">Untuk menggunakan rustup sangat mudah format penulisan nya adalah <code>rustup [FLAGS] [SUBCOMMAND]</code>, berikut daftar subcommand yang ada :</p>
+<ul>
+<li><p id = "para-33"><b>Show</b> digunakan untuk melihat daftar toolchain yang terinstall dan aktif, contoh :</p>
+<pre><span style="color:#323232;">rustup show</span>
+
+<span style="color:#323232;">// Output</span>
+<span style="color:#323232;">Default host: x86_64-unknown-linux-gnu</span>
+<span style="color:#323232;">installed toolchains</span>
+<span style="color:#323232;">--------------------</span>
+<span style="color:#323232;">stable-x86_64-unknown-linux-gnu (default)</span>
+<span style="color:#323232;">nightly-x86_64-unknown-linux-gnu</span>
+
+<span style="color:#323232;">active toolchain</span>
+<span style="color:#323232;">----------------</span>
+<span style="color:#323232;">stable-x86_64-unknown-linux-gnu (default)</span>
+<span style="color:#323232;">rustc 1.15.1 (021bd294c 2017-02-08)</span>
+
+</pre></li>
+<li><p id = "para-34"><b>Update</b> digunakan untuk mengupdate toolchain, contoh :</p>
+<pre><span style="color:#323232;">rustup update</span>
+
+<span style="color:#323232;">// Output</span>
+<span style="color:#323232;">info: syncing channel updates for &#39;stable-x86_64-unknown-linux-gnu&#39;</span>
+<span style="color:#323232;">info: downloading component &#39;rustc&#39;</span>
+<span style="color:#323232;"> 36.4 MiB /  36.4 MiB (100 %) 291.2 KiB/s ETA:   0 s</span>
+<span style="color:#323232;">info: downloading component &#39;rust-std&#39;</span>
+<span style="color:#323232;"> 50.0 MiB /  50.0 MiB (100 %) 217.6 KiB/s ETA:   0 s</span>
+<span style="color:#323232;">info: downloading component &#39;cargo&#39;</span>
+<span style="color:#323232;">  4.7 MiB /   4.7 MiB (100 %) 288.0 KiB/s ETA:   0 s</span>
+<span style="color:#323232;">info: downloading component &#39;rust-src&#39;</span>
+<span style="color:#323232;"> 27.4 MiB /  27.4 MiB (100 %) 233.6 KiB/s ETA:   0 s</span>
+<span style="color:#323232;">info: installing component &#39;rustc&#39;</span>
+<span style="color:#323232;">info: installing component &#39;rust-std&#39;</span>
+<span style="color:#323232;">info: installing component &#39;cargo&#39;</span>
+<span style="color:#323232;">info: installing component &#39;rust-src&#39;</span>
+<span style="color:#323232;">info: syncing channel updates for &#39;nightly-x86_64-unknown-linux-gnu&#39;</span>
+<span style="color:#323232;">info: checking for self-updates</span>
+
+<span style="color:#323232;">stable-x86_64-unknown-linux-gnu updated - rustc 1.16.0 (30cf806ef 2017-03-10)</span>
+<span style="color:#323232;">nightly-x86_64-unknown-linux-gnu unchanged - rustc 1.17.0-nightly (0aeb9c129 2017-03-15)</span>
+
+</pre><p id = "para-35">atau bisa juga mengupdate per toolchain, tambahkan saja nama toolchain nya</p>
+<pre><span style="color:#323232;">rustup update nightly</span>
+
+<span style="color:#323232;">// Output</span>
+<span style="color:#323232;">info: syncing channel updates for &#39;nightly-x86_64-unknown-linux-gnu&#39;</span>
+<span style="color:#323232;"> 282.9 KiB / 282.9 KiB (100 %) 121.6 KiB/s ETA:   0 s</span>
+<span style="color:#323232;">info: downloading component &#39;rustc&#39;</span>
+<span style="color:#323232;">  41.0 MiB /  41.0 MiB (100 %) 211.2 KiB/s ETA:   0 s</span>
+<span style="color:#323232;">info: downloading component &#39;rust-std&#39;</span>
+<span style="color:#323232;">  65.5 MiB /  65.5 MiB (100 %) 188.8 KiB/s ETA:   0 s</span>
+<span style="color:#323232;">info: downloading component &#39;cargo&#39;</span>
+<span style="color:#323232;">   8.6 MiB /   8.6 MiB (100 %) 252.3 KiB/s ETA:   0 s</span>
+<span style="color:#323232;">info: installing component &#39;rustc&#39;</span>
+<span style="color:#323232;">info: installing component &#39;rust-std&#39;</span>
+<span style="color:#323232;">info: installing component &#39;cargo&#39;</span>
+
+<span style="color:#323232;">  nightly-x86_64-unknown-linux-gnu updated - rustc 1.17.0-nightly (0aeb9c129 2017-03-15)</span>
+
+</pre></li>
+<li><p id = "para-36"><b>Default</b> digunakan untuk mengubah default toolchain yang kita gunakan seperti merubah channel toolchain dari <code>stable</code> ke <code>nightly</code>, contoh :</p>
+<pre><span style="color:#323232;">rustup default nightly</span>
+
+<span style="color:#323232;">// Output</span>
+<span style="color:#323232;">info: using existing install for &#39;nightly-x86_64-unknown-linux-gnu&#39;</span>
+<span style="color:#323232;">info: default toolchain set to &#39;nightly-x86_64-unknown-linux-gnu&#39;</span>
+
+<span style="color:#323232;">  nightly-x86_64-unknown-linux-gnu unchanged - rustc 1.17.0-nightly (b1e31766d 2017-03-03)</span>
+
+</pre></li>
+<li><p id = "para-37"><b>Toolchain</b> digunakan untuk mencari dan menampilkan daftar toolchain yang terinstall.</p>
+<ul>
+<li><p id = "para-38">Menampilkan daftar toolchain</p>
+<pre><span style="color:#323232;">rustup toolchain list</span>
+
+<span style="color:#323232;">// Output</span>
+<span style="color:#323232;">stable-x86_64-unknown-linux-gnu</span>
+<span style="color:#323232;">nightly-x86_64-unknown-linux-gnu (default)</span>
+
+</pre></li>
+<li><p id = "para-39">Install toolchain</p>
+<pre><span style="color:#323232;">rustup toolchain install beta</span>
+
+<span style="color:#323232;">// Output</span>
+<span style="color:#323232;">info: syncing channel updates for &#39;beta-x86_64-unknown-linux-gnu&#39;</span>
+<span style="color:#323232;">156.4 KiB / 156.4 KiB (100 %) 129.9 KiB/s ETA:   0 s</span>
+<span style="color:#323232;">info: downloading component &#39;rustc&#39;</span>
+<span style="color:#323232;"> 37.1 MiB /  37.1 MiB (100 %) 224.0 KiB/s ETA:   0 s</span>
+<span style="color:#323232;">info: downloading component &#39;rust-std&#39;</span>
+<span style="color:#323232;"> 61.6 MiB /  61.6 MiB (100 %) 220.8 KiB/s ETA:   0 s</span>
+<span style="color:#323232;">info: downloading component &#39;cargo&#39;</span>
+<span style="color:#323232;">  8.6 MiB /   8.6 MiB (100 %) 281.6 KiB/s ETA:   0 s</span>
+<span style="color:#323232;">info: installing component &#39;rustc&#39;</span>
+<span style="color:#323232;">info: installing component &#39;rust-std&#39;</span>
+<span style="color:#323232;">info: installing component &#39;cargo&#39;</span>
+
+<span style="color:#323232;">  beta-x86_64-unknown-linux-gnu installed - rustc 1.17.0-beta.1 (408d49e60 2017-03-14)</span>
+
+</pre></li>
+<li><p id = "para-40">Uninstall toolchain</p>
+<pre><span style="color:#323232;">rustup toolchain uninstall beta</span>
+
+<span style="color:#323232;">// Output</span>
+<span style="color:#323232;">info: uninstalling toolchain &#39;beta-x86_64-unknown-linux-gnu&#39;</span>
+<span style="color:#323232;">info: toolchain &#39;beta-x86_64-unknown-linux-gnu&#39; uninstalled</span>
+
+</pre></li>
+<li><p id = "para-41">Link (membuat custom toolchain)</p>
+<pre><span style="color:#323232;">rustup toolchain link custom-toolchain /path/to/my/toolchain/sysroot</span>
+
+</pre></li>
+</ul>
+</li>
+<li><p id = "para-42"><b>Target</b> digunakan untuk kompilasi ke platform yang dinginkan karena Rust mendukung kompilasi untuk berbagai platform (<em>cross-compilation</em>)</p>
+<ul>
+<li><p id = "para-43">Menambahkan target</p>
+<pre><span style="color:#323232;">rustup target add arm-linux-androideabi</span>
+
+<span style="color:#323232;">// Output</span>
+<span style="color:#323232;">info: downloading component &#39;rust-std&#39; for &#39;arm-linux-androideabi&#39;</span>
+<span style="color:#323232;"> 16.0 MiB /  16.0 MiB (100 %) 172.8 KiB/s ETA:   0 s</span>
+<span style="color:#323232;">info: installing component &#39;rust-std&#39; for &#39;arm-linux-androideabi&#39;</span>
+
+</pre><p id = "para-44">dengan fitur target ini kita dapat membuild aplikasi untuk android dengan cargo dan menambahkan flag <code>--target</code>. Penggunaan Cargo akan kita bahas pada subbab berikutnya.</p>
+</li>
+<li><p id = "para-45">Melihat daftar target yang terinstall</p>
+<pre><span style="color:#323232;">rustup target list</span>
+
+<span style="color:#323232;">// Output</span>
+<span style="color:#323232;">aarch64-apple-ios</span>
+<span style="color:#323232;">aarch64-linux-android</span>
+<span style="color:#323232;">aarch64-unknown-fuchsia</span>
+<span style="color:#323232;">aarch64-unknown-linux-gnu</span>
+<span style="color:#323232;">arm-linux-androideabi (installed)</span>
+<span style="color:#323232;">...</span>
+
+</pre></li>
+<li><p id = "para-46">Menghapus (remove) target yang terinstall caranya <code>rustup target remove &lt;TARGET&gt;</code></p>
+<pre><span style="color:#323232;">rustup target remove arm-linux-androideabi</span>
+
+</pre></li>
+</ul>
+</li>
+<li><p id = "para-47"><b>Component</b></p>
+<ul>
+<li><p id = "para-48">Menambahkan component, untuk menambahkan caranya <code>rustup component add &lt;COMPONENT&gt;</code> contoh :</p>
+<pre><span style="color:#323232;">rustup component add rust-src</span>
+
+</pre></li>
+<li><p id = "para-49">Melihat daftar component</p>
+<pre><span style="color:#323232;">rustup component list</span>
+
+<span style="color:#323232;">// Output</span>
+<span style="color:#323232;">cargo-x86_64-unknown-linux-gnu (default)</span>
+<span style="color:#323232;">rust-docs-x86_64-unknown-linux-gnu</span>
+<span style="color:#323232;">rust-src (installed)</span>
+<span style="color:#323232;">rust-std-aarch64-apple-ios</span>
+<span style="color:#323232;">rust-std-aarch64-linux-android</span>
+<span style="color:#323232;">...</span>
+
+</pre></li>
+<li><p id = "para-50">Menghapus component, untuk menghapus caranya <code>rustup component remove &lt;COMPONENT&gt;</code> contoh :</p>
+<pre><span style="color:#323232;">rustup component remove rust-src</span>
+
+</pre></li>
+</ul>
+</li>
+<li><p id = "para-51"><b>Override</b> digunakan untuk memberitahu compiler agar memakai toolchain tertentu pada direktori proyek secara spesifik.</p>
+<ul>
+<li><p id = "para-52">Melihat direktori yang telah di override</p>
+</li>
+</ul>
+<pre><span style="color:#323232;">rustup override list</span>
+
+</pre><ul>
+<li><p id = "para-53">Menentukan (setup) toolchain dengan perintah <code>rustup override set &lt;DIRECTORY&gt;</code></p>
+</li>
+</ul>
+<pre><span style="color:#323232;">rustup override set ~/Code/aplikasi-ku</span>
+
+</pre><ul>
+<li><p id = "para-54">Menghapus override (unset) toolchain</p>
+</li>
+</ul>
+<pre><span style="color:#323232;">rustup override unset</span>
+
+</pre></li>
+<li><p id = "para-55"><b>Run</b> digunakan untuk menjalankan toolchain yang tersedia</p>
+<ul>
+<li><p id = "para-56">Penggunaan bersamaan dengan compiler.</p>
+<pre><span style="color:#323232;">rustup run nightly rustc ~/Desktop/hello.rs</span>
+
+</pre></li>
+<li><p id = "para-57">Penggunaan bersamaan dengan shell.</p>
+<pre><span style="color:#323232;">rustup run nightly bash</span>
+
+</pre></li>
+</ul>
+</li>
+<li><p id = "para-58"><b>Which</b> digunakan untuk menampilkan lokasi aplikasi binari yang sedang dijalankan</p>
+<pre><span style="color:#323232;">rustup which rustc</span>
+
+<span style="color:#323232;">// Output</span>
+<span style="color:#323232;">/home/&lt;user&gt;/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc</span>
+
+</pre></li>
+<li><p id = "para-59"><b>Doc</b> digunakan untuk menampilkan dokumentasi Rust</p>
+<ul>
+<li><p id = "para-60">Buku</p>
+</li>
+</ul>
+<pre><span style="color:#323232;">rustup doc --book</span>
+
+</pre><ul>
+<li><p id = "para-61">Standard Library</p>
+</li>
+</ul>
+<pre><span style="color:#323232;">rustup doc --std</span>
+
+</pre><p id = "para-62">ketika perintah diatas kita jalankan maka secara otomatis dokumentasi akan ditampilkan dibrowser.</p>
+<blockquote><p id = "para-63">NOTE: Agar kita dapat menggunakan fitur ini, component rust-docs harus sudah terinstall, untuk menginstalnya jalankan perintah <code>rustup component add rust-docs</code>.</p>
+</blockquote>
+</li>
+<li><p id = "para-64"><b>Self</b> digunakan untuk memodifikasi rustup seperti mengupdate dan menguninstall</p>
+<ul>
+<li><p id = "para-65">Update rustup</p>
+</li>
+</ul>
+<pre><span style="color:#323232;">rustup self update</span>
+
+</pre><ul>
+<li><p id = "para-66">Uninstall rustup</p>
+</li>
+</ul>
+<pre><span style="color:#323232;">rustup self uninstall</span>
+
+</pre></li>
+<li><p id = "para-67"><b>Set</b> digunakan untuk melakukan pengaturan (settings) pada rustup seperti merubah default host, tapi fitur ini sangat jarang digunakan karena pada saat instalasi rustup, secara otomatis rustup sudah mengatur keperluan ini.</p>
+<pre><span style="color:#323232;">rustup set default-host</span>
+
+</pre></li>
+<li><p id = "para-68"><b>Completion</b> fitur ini digunakan untuk menambahkan penyempurnaan CLI (<em>command line interface</em>) yang sangat berguna sekali pada saat bermain dengan rustup agar lebih cepat penilaiannya.</p>
+<ul>
+<li><p id = "para-69">Bash</p>
+</li>
+</ul>
+<pre><span style="color:#323232;"># rustup completions bash &gt; /etc/bash_completion.d/rustup.bash-completion</span>
+
+</pre><ul>
+<li><p id = "para-70">Zsh</p>
+</li>
+</ul>
+<pre><span style="color:#323232;">$ rustup completions zsh &gt; ~/.zfunc/_rustup</span>
+
+</pre><p id = "para-71">Lalu tambahkan kode dibawah ini didalam file <code>zshrc</code> :</p>
+<pre><span style="color:#323232;">fpath+=~/.zfunc</span>
+
+</pre><ul>
+<li><p id = "para-72">Fish</p>
+</li>
+</ul>
+<pre><span style="color:#323232;">$ rustup completions fish &gt; ~/.config/fish/completions/rustup.fish</span>
+
+</pre></li>
+</ul>
+<h3 id = "link-10">Cargo</h3>
+<p id = "para-73">Cargo adalah <em>package manager</em> atau tool yang memudahkan kita dalam menambahkan dan memanajemen paket-paket yang menjadi ketergantuangan (<em>depencies</em>). Untuk itu cargo melakukan empat hal diantaranya :</p>
+<ol>
+<li><p id = "para-74">Membuat metadata dengan nama file <code>Cargo.toml</code></p>
+</li>
+<li><p id = "para-75">Menambahkan dependency yang dibutuhkan</p>
+</li>
+<li><p id = "para-76">Menjalan <code>rustc</code> untuk keperluan kompilasi</p>
+</li>
+<li><p id = "para-77">Memperkenalkan konvensi untuk membuat bekerja dengan proyek-proyek Rust mudah.</p>
+</li>
+</ol>
+<ul>
+<li><p id = "para-78"><b>New</b> digunakan untuk membuat proyek baru</p>
+<pre><span style="color:#323232;">cargo new nama_proyek --bin</span>
+
+</pre><p id = "para-79">atau jika kita ingin membuat proyek librari</p>
+<pre><span style="color:#323232;">cargo new nama_proyek</span>
+
+</pre><p id = "para-80">jika kita jalankan perintah diatas, maka cargo akan membuatkan direktori dan file-file yang kita butuhkan seperti contoh dibawah ini :</p>
+<pre><span style="color:#323232;">nama_proyek</span>
+<span style="color:#323232;">.</span>
+<span style="color:#323232;">├── .git</span>
+<span style="color:#323232;">│   ├── HEAD</span>
+<span style="color:#323232;">│   ├── config</span>
+<span style="color:#323232;">│   ├── description</span>
+<span style="color:#323232;">│   ├── hooks</span>
+<span style="color:#323232;">│   ├── info</span>
+<span style="color:#323232;">│   ├── objects</span>
+<span style="color:#323232;">│   └── refs</span>
+<span style="color:#323232;">└── src</span>
+<span style="color:#323232;">│   └── main.rs</span>
+<span style="color:#323232;">├── .gitignore</span>
+<span style="color:#323232;">└── Cargo.toml</span>
+
+<span style="color:#323232;">6 directories, 6 files</span>
+
+</pre><ol>
+<li><p id = "para-81">direktori proyek yang sesuai dengan nama proyek yang kita sebutkan diatas berikut dengan inisialisasi <code>git</code></p>
+</li>
+<li><p id = "para-82">file <code>Cargo.toml</code> sebagai manifest proyek</p>
+</li>
+<li><p id = "para-83">direktori <code>src</code> sebagai direktori utama kode sumber</p>
+</li>
+<li><p id = "para-84">file <code>main.rs</code> atau <code>lib.rs</code> jika kita hendak membuat librari</p>
+</li>
+</ol>
+</li>
+<li><p id = "para-85"><b>Init</b> digunakan untuk menginisialisasi proyek yang sudah dibuat namun belum terintegrasi dengan cargo</p>
+<pre><span style="color:#323232;">cargo init</span>
+
+</pre><p id = "para-86">atau jika binari proyek</p>
+<pre><span style="color:#323232;">cargo init --bin</span>
+
+</pre></li>
+<li><p id = "para-87"><b>Build</b> digunakan untuk mengkompilasi kode sumber kedalam bentuk file binari</p>
+<pre><span style="color:#323232;">cargo build</span>
+
+</pre><p id = "para-88">hasil kompilasi tersebut akan ditempatkan didalam direktori <code>target</code></p>
+</li>
+<li><p id = "para-89"><b>Run</b> sama halnya <code>build</code> pada perintah <code>run</code> sebenarnya cargo terlebih dahulu mengkompilasi namun langsung menjalankan hasil kompilasi tersebut</p>
+<pre><span style="color:#323232;">cargo run</span>
+
+</pre></li>
+<li><p id = "para-90"><b>Clean</b> digunakan untuk membersihkan direktori/file yang dihasilkan pada saat <code>build</code> yakni direktori <code>target</code></p>
+<pre><span style="color:#323232;">cargo clean</span>
+
+</pre></li>
+<li><p id = "para-91"><b>Test</b> ketika bekerja dengan proyek yang cukup besar pastinya kita akan membutuhkan testing, hal ini ditangani oleh cargo maka kita dapat dengan mudah membuat test untuk proyek kita, berikut contoh dari unit testing :</p>
+<pre><span style="color:#323232;">cargo test</span>
+
+<span style="color:#323232;">// Output</span>
+<span style="color:#323232;">Finished dev [unoptimized + debuginfo] target(s) in 0.0 secs</span>
+<span style="color:#323232;"> Running target/debug/deps/&lt;nama_proyek&gt;-46a021ef15e0c20f</span>
+
+<span style="color:#323232;">running 11 tests</span>
+<span style="color:#323232;">test containers ... ok</span>
+<span style="color:#323232;">test ping ... ok</span>
+<span style="color:#323232;">test container ... ok</span>
+<span style="color:#323232;">test swarm ... ok</span>
+<span style="color:#323232;">test nodes ... ok</span>
+<span style="color:#323232;">test services ... ok</span>
+<span style="color:#323232;">test networks ... ok</span>
+<span style="color:#323232;">test images ... ok</span>
+<span style="color:#323232;">test tasks ... ok</span>
+<span style="color:#323232;">test volumes ... ok</span>
+<span style="color:#323232;">test info ... ok</span>
+
+<span style="color:#323232;">test result: ok. 11 passed; 0 failed; 0 ignored; 0 measured</span>
+
+<span style="color:#323232;">     Running target/debug/deps/&lt;nama_proyek&gt;-8a1cf4acd969d628</span>
+
+<span style="color:#323232;">running 0 tests</span>
+
+<span style="color:#323232;">test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured</span>
+
+<span style="color:#323232;">   Doc-tests &lt;nama_proyek&gt;</span>
+
+<span style="color:#323232;">running 0 tests</span>
+
+<span style="color:#323232;">test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured</span>
+
+</pre></li>
+<li><p id = "para-92"><b>Bench</b> digunakan untuk keperluan <em>benchmarking</em>, berikut contoh benchmarck :</p>
+<pre><span style="color:#323232;">Finished release [optimized] target(s) in 29.70 secs</span>
+<span style="color:#323232;">     Running target/release/deps/&lt;nama_proyek&gt;-53cdfcee641cf7b8</span>
+
+<span style="color:#323232;">running 2 tests</span>
+<span style="color:#323232;">test tests::it_works ... ignored</span>
+<span style="color:#323232;">test tests::bench_add_two ... bench:           0 ns/iter (+/- 0)</span>
+
+<span style="color:#323232;">test result: ok. 0 passed; 0 failed; 1 ignored; 1 measured</span>
+
+</pre></li>
+<li><p id = "para-93"><b>Install</b> digunakan untuk menginstal atau menambahkan paket seperti <code>racer</code>, <code>rustfmt</code> dan <code>rustsym</code> yang sudah kita gunakan pada sub bab sebelumnya</p>
+<pre><span style="color:#323232;">cargo install &lt;nama_paket&gt;</span>
+
+</pre><p id = "para-94">paket yang terinstall akan ditempat kedalam direktori <code>/home/&lt;user&gt;/.cargo/bin</code></p>
+</li>
+<li><p id = "para-95"><b>Update</b> digunakan untuk pemutakhiran semua paket depencies pada proyek kita</p>
+<pre><span style="color:#323232;">cargo update</span>
+
+</pre><p id = "para-96">atau dapat juga mengupdate perpaket</p>
+<pre><span style="color:#323232;">cargo update -p &lt;nama_paket&gt;</span>
+
+</pre></li>
+<li><p id = "para-97"><b>Search</b> digunakan untuk mencari paket-paket yang terdapat di registry <a href = "https://crates.io">crates.io</a></p>
+<pre><span style="color:#323232;">cargo search reg</span>
+
+<span style="color:#323232;">// Output</span>
+<span style="color:#323232;">  Updating registry `https://github.com/rust-lang/crates.io-index`</span>
+<span style="color:#323232;">winreg = &quot;0.4.0&quot;         # Rust bindings to MS Windows Registry API</span>
+<span style="color:#323232;">cpuprofiler = &quot;0.0.3&quot;    # Bindings to google&#39;s cpu profiler</span>
+<span style="color:#323232;">ecp = &quot;0.1.1&quot;            # easily build compiler plugins.</span>
+
+</pre></li>
+<li><p id = "para-98"><b>Publish</b> digunakan untuk mempublikasikan paket yang kita buat ke registry</p>
+<pre><span style="color:#323232;">cargo publish</span>
+
+</pre></li>
+<li><p id = "para-99"><b>Doc</b> digunakan untuk men-generate dokumentasi paket yang kita buat</p>
+<pre><span style="color:#323232;">cargo docs</span>
+
+</pre><p id = "para-100">hasil dokumentasi otomatis akan dibuat didalam direktori <code>target/doc</code></p>
+</li>
+</ul>
+
+</div><div id = "chapter-1" class = "chapter">
+  <h1 id = 'link-11'><span class = 'chapter-header'>Chapter 2</span><br />Pointer dan Memori Safety</h1><p id = "para-101">Bab yang sangat fundamental ini membahas secara detil tentang mekanisme pengalokasian memori pada Rust. Pembahasan pada bab ini diantaranya adalah :</p>
+<ul>
+<li><p id = "para-102">Ownership</p>
+</li>
+<li><p id = "para-103">References dan Borrowing</p>
+</li>
+<li><p id = "para-104">Lifetimes</p>
+</li>
+<li><p id = "para-105">Stack dan Heap</p>
+</li>
+</ul>
+
+</div><div id = "chapter-2" class = "chapter">
+  <h1 id = 'link-12'><span class = 'chapter-header'>Chapter 3</span><br />Penulisan Sintaks Dasar</h1><p id = "para-106">Bab ini membahas tentang penulisan-penulisan dasar yang menjadi fondasi untuk mempelajari bahasa Rust. Pembasahan pada BAB ini diantaranya adalah :</p>
+<ul>
+<li><p id = "para-107">Variabel</p>
+</li>
+<li><p id = "para-108">Mutabilitas</p>
+</li>
+<li><p id = "para-109">Struktur kontrol</p>
+</li>
+<li><p id = "para-110">Tipe primitif</p>
+</li>
+<li><p id = "para-111">Komentar</p>
+</li>
+<li><p id = "para-112">Array</p>
+</li>
+<li><p id = "para-113">Fungsi</p>
+</li>
+<li><p id = "para-114">Perulangan</p>
+</li>
+<li><p id = "para-115">Struct</p>
+</li>
+<li><p id = "para-116">Enum</p>
+</li>
+<li><p id = "para-117">Method</p>
+</li>
+<li><p id = "para-118">String</p>
+</li>
+<li><p id = "para-119">Trait</p>
+</li>
+<li><p id = "para-120">Konstanta</p>
+</li>
+</ul>
+
+</div><div id = "chapter-3" class = "chapter">
+  <h1 id = 'link-13'><span class = 'chapter-header'>Chapter 4</span><br />Pengorganisasian Kode dan Macro</h1><p id = "para-121">Bab ini membahas tentang cara mengorganisasikan kode kedalam modul-modul sehingga dapat mempermudah dalam perawatan kode. Pembahasan pada BAB ini diantaranya adalah :</p>
+<ul>
+<li><p id = "para-122">Modul dan Crate</p>
+</li>
+<li><p id = "para-123">Macro</p>
+</li>
+</ul>
+
+</div><div id = "chapter-4" class = "chapter">
+  <h1 id = 'link-14'><span class = 'chapter-header'>Chapter 5</span><br />Konkurensi dan Paralel</h1><p id = "para-124">Bab ini membahas tentang penggunaan konkurensi dan paralelisme pada beberapa processor secara simultan. Pembahasan pada Bab ini diantaranya adalah :</p>
+<ul>
+<li><p id = "para-125">Thread dan Konkurensi</p>
+</li>
+<li><p id = "para-126">Komunikasi antar thread dengan Channel</p>
+</li>
+<li><p id = "para-127">Komunikasi Synchronous dan Asynchronous</p>
+</li>
+</ul>
+
+</div>
+
+      </div>
+      
+    </div>
+  </body>
+</html>
